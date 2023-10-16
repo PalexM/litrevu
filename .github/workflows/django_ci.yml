@@ -49,5 +49,6 @@ jobs:
         key: ${{ secrets.MON_SRV }}
         script: |
           sudo docker pull mrp0p/litrevu:latest
-          sudo docker-compose down
-          sudo docker-compose up -d
+          sudo docker stop litrevu || true
+          sudo docker rm litrevu || true
+          sudo docker run --name litrevu -d -p 8000:8000 mrp0p/litrevu:latest
