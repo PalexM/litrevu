@@ -1,0 +1,19 @@
+# Ignoră directorul venv, dacă folosești un mediu virtual
+.env/
+
+# Ignoră toate fișierele .pyc și .pyo
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignoră fișierele de configurare ale editorului
+.idea/
+*.swp
+*.swo
+*.swn
+
+# Ignoră fișierele Git
+.git/
+
+# Ignoră fișierele de test
+tests/
