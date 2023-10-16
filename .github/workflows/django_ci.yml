@@ -46,7 +46,7 @@ jobs:
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ubuntu
-        key: MON_SRV
+        key: ${{ secrets.MON_SRV$ }}
         script: |
           docker pull mrp0p/litrevu:latest
           docker-compose down
