@@ -1,0 +1,29 @@
+{% extends 'app/base.html' %}
+
+{% load static %}
+{% block content %}
+{% load bootstrap5 %}
+
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+<div class="d-flex justify-content-center align-items-center" style="height: 60vh;">
+    <form action="{% url 'register' %}" method="post" class="form">
+        <div class="text-center">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+            <button type="submit" class="btn btn-primary">
+                Submit
+            </button>
+            {% endbuttons %}
+            <p>Don't have an account? <a href="{%url 'login' %}">Login</a></p>
+        </div>
+    </form>
+
+</div>
+
+{# Read the documentation for more information #}
+
+{% endblock content%}
