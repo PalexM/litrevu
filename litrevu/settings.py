@@ -26,8 +26,9 @@ SECRET_KEY = "django-insecure-%6i9gxj&a^3)4vc8*6c&+g)rr8=$_hkh(g2!ovy7yj2-m3qnnj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["litrevu.mrpop.work", "www.litrevu.mrpop.work", "localhost"]
 
+CSRF_TRUSTED_ORIGINS = ["https://litrevu.mrpop.work", "http://localhost"]
 
 # Application definition
 
