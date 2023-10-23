@@ -101,19 +101,14 @@ class Followers(generic.FormView):
                 messages.error(request, "L'utilisateur n'existe pas")
                 return redirect("followers")
 
-        elif request.POST.get("unfollow_user"):
-            user_pk = request.POST.get("unfollow_user")
-            user_exist = User.objects.filter(pk=user_pk)
-            if user_exist:
-                connected_user_object = User.objects.get(username=connected_user)
-                followed_user_object = User.objects.get(username=follow_user)
-                try:
-                    UserFollows.objects.create(
-                        user=connected_user_object, followed_user=followed_user_object
-                    )
-
-            return redirect("followers")
-            # # # user_exist = User.objects.filter(pk=user_pk)
+        # elif request.POST.get("unfollow_user"):
+        #     user_pk = request.POST.get("unfollow_user")
+        #     user_exist = User.objects.filter(pk=user_pk)
+        #     if user_exist:
+        #         connected_user_object = User.objects.get(username=connected_user)
+        #         followed_user_object = User.objects.get(username=follow_user)
+        #     return redirect("followers")
+        #     # # # user_exist = User.objects.filter(pk=user_pk)
 
 
 @login_required
