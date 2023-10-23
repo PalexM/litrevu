@@ -6,3 +6,8 @@ body {
     /* Ajustează poziția imaginii */
     height: 100vh;
 }
+
+.followers {
+    top: 20%;
+    position: absolute;
+}

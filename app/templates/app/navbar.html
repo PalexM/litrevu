@@ -20,18 +20,24 @@
                     <span class="nav-link">Bună, {{ user.username }}</span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Profil</a>
+                    <a class="nav-link" href="#">Flux</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Deconectare</a>
+                    <a class="nav-link" href="">Posts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'followers' %}">Abonnements</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Se Deconectare</a>
                 </li>
                 <!-- {% else %} -->
                 <!-- Afișează opțiunile de autentificare dacă nu este autentificat -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Autentificare</a>
+                    <a class="nav-link" href="{% url 'login' %}">Autentificare</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Înregistrare</a>
+                    <a class="nav-link" href="{% url 'register' %}">Înregistrare</a>
                 </li>
                 <!-- {% endif %} -->
             </ul>

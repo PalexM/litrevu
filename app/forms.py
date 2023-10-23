@@ -14,3 +14,7 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = ["username", "password1", "password2"]
+
+
+class FollowForm(forms.Form):
+    follow_user = forms.CharField(max_length=65, label="Username", required=True)

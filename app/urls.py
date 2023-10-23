@@ -10,5 +10,7 @@ urlpatterns = [
     path("", views.IndexView.index, name="index"),
     path("register/", unauthenticated_user(views.Register.as_view()), name="register"),
     path("login/", unauthenticated_user(views.Login.as_view()), name="login"),
-    path("logout/", views.user_logout, name="logout"),
+    path("logout/", views.Login.user_logout, name="logout"),
+    path("followers/", views.Followers.as_view(), name="followers"),
+    path("infos/", views.infos, name="infos"),
 ]
