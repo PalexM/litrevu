@@ -15,11 +15,12 @@
             {% csrf_token %}
             {% bootstrap_form form %}
             {% buttons %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}" />
             <button type="submit" class="btn btn-primary">
-                Submit
+                Connection
             </button>
             {% endbuttons %}
-            <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+            <p>Vous n'avez pas de compte? <a href="{% url 'register' %}">S'enregistrer</a></p>
         </div>
     </form>
 </div>

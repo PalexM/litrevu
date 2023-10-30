@@ -28,10 +28,10 @@
     </div>
     <div class="row justify-content-center mt-3">
         <div class="col-md-3">
-            <h2 class="mb-3 text-primary">Abonnements</h2>
+            <h2 class="mb-3 text-primary">Abonnés</h2>
             <ul class="list-group">
-                {% for user in following %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">{{user.followed_user}}
+                {% for user in followers %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">{{user.user}}
                 </li>
                 {% endfor %}
             </ul>
@@ -39,16 +39,15 @@
     </div>
     <div class="row justify-content-center mt-3">
         <div class="col-md-3">
-            <h2 class="mb-3 text-primary">Abonnés</h2>
+            <h2 class="mb-3 text-primary">Abonnements</h2>
             <ul class="list-group">
-                {% for user in followers %}
+                {% for user in following %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    {{user.user}}
+                    {{user.followed_user}}
 
-                    <!-- Formular pentru dezabonare -->
-                    <form action="{% url 'followers' %}" name="unfollow" method="post" class="ml-2">
+                    <form action="{% url 'unfollow' %}" name="unfollow" method="post" class="ml-2">
                         {% csrf_token %}
-                        <input type="hidden" name="unfollow_user" value="{{user.user.id}}">
+                        <input type="hidden" name="unfollow_user" value="{{user.followed_user.id}}">
                         <button type="submit" class="btn btn-danger">Désabonner</button>
                     </form>
 
