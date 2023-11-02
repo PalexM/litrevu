@@ -7,7 +7,7 @@ from django.http import Http404
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
-from app.forms import RegisterForm, LoginForm, FollowForm
+from app.forms import RegisterForm, LoginForm, FollowForm, TicketForm, ReviewForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
@@ -16,18 +16,19 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.db import IntegrityError
-
+import os
+from django.conf import settings
 from pprint import pformat
+from django.utils.text import slugify
+import uuid
+from os.path import splitext
 
 
 class IndexView(generic.ListView):
     def get(self, request):
-        if request.user.is_authenticated:
-            user = request.user
-            context = {"user": user}
-            return render(request, "app/index.html", context)
-        else:
-            return redirect("login")
+        user = request.user
+        context = {"user": user}
+        return render(request, "app/index.html", context)
 
 
 class Register(generic.FormView):
@@ -128,7 +129,29 @@ class Followers(generic.FormView):
             return redirect("followers")
 
 
-@method_decorator(login_required(login_url="login"), name="dispatch")
-def infos(request):
-    request_str = pformat(vars(request))
-    return HttpResponse(f"<pre>{request_str}</pre>")
+class Tickets(generic.FormView):
+    success_url = "tickets"
+
+    def get(self, request):
+        user = request.user
+        pre_filled_data = {
+            "title": "Valoare pre-umplută pentru titlu",
+            "description": "Valoare pre-umplută pentru descriere",
+        }
+        form = ReviewForm(initial=pre_filled_data)
+        context = {"form": form, "user": user}
+        return render(request, "app/posts.html", context)
+
+    def post(self, request):
+        connected_user = self.request.user
+        title = self.request.POST.get("title")
+        description = self.request.POST.get("description")
+        image = self.request.FILES.get("image")
+        _, image_extension = splitext(image.name)
+        unique_name = f"{str(uuid.uuid4().hex)}{image_extension}"
+        with open(
+            os.path.join(settings.MEDIA_ROOT, "media", unique_name), "wb"
+        ) as destination:
+            for chunk in image.chunks():
+                destination.write(chunk)
+        return redirect("tickets")

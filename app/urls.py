@@ -8,13 +8,13 @@ from . import views
 
 
 urlpatterns = [
-    path("", views.IndexView.as_view(), name="index"),
+    path("", login_required(views.IndexView.as_view()), name="index"),
     path(
         "register/", redirect_connected_user(views.Register.as_view()), name="register"
     ),
     path("login/", redirect_connected_user(views.Login.as_view()), name="login"),
-    path("logout/", views.Login.user_logout, name="logout"),
+    path("logout/", login_required(views.Login.user_logout), name="logout"),
     path("followers/", login_required(views.Followers.as_view()), name="followers"),
     path("unfollow/", login_required(views.Followers.unfollow_user), name="unfollow"),
-    path("infos/", views.infos, name="infos"),
+    path("tickets/", login_required(views.Tickets.as_view()), name="tickets"),
 ]

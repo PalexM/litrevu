@@ -1,0 +1,37 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block content %}
+{# Load the tag library #}
+{% load bootstrap5 %}
+
+Bună, {{ user}}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+{# Display a form #}
+
+
+<div class="d-flex justify-content-center align-items-center" style="height: 40vh;">
+    <div class="container">
+        <form method="post" action="">
+            {% csrf_token %}
+            <div class="form-group d-flex justify-content-center">
+                <button type="submit" value="form1" class="btn btn-primary btn-margin">Creer un Ticket</button>
+                <button type="submit" value="form1" class="btn btn-primary">Creer un Review</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+{# Read the documentation for more information #}
+{% endblock content %}

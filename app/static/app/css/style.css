@@ -7,7 +7,32 @@ body {
     height: 100vh;
 }
 
+.active-link {
+    font-weight: bold;
+    color: black;
+    border-bottom: 2px solid blue;
+}
+
 .followers {
     top: 20%;
     position: absolute;
+}
+
+#id_rating {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#id_rating label {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 10px;
+    /* Ajustează marginea pentru a controla spațierea între elementele checkbox */
+}
+
+.btn-margin {
+
+    margin-right: 40px;
+    /* Aici puteți ajusta spațiul */
 }

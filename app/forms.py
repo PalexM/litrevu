@@ -23,4 +23,24 @@ class RegisterForm(UserCreationForm):
 
 
 class FollowForm(forms.Form):
-    follow_user = forms.CharField(max_length=65, label="Username", required=True)
+    follow_user = forms.CharField(max_length=65, label="Utilisateur", required=True)
+
+
+class TicketForm(forms.Form):
+    title = forms.CharField(max_length=128, label="Titre", required=True)
+    description = forms.CharField(
+        widget=forms.Textarea, label="Description", required=True
+    )
+    image = forms.ImageField(label="Image", required=False)
+
+
+class ReviewForm(forms.Form):
+    title = forms.CharField(max_length=128, label="Titre", required=True)
+    description = forms.CharField(
+        widget=forms.Textarea, label="Description", required=True
+    )
+    rating_choices = [(i, i) for i in range(5)]
+    rating = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        choices=rating_choices,
+    )
