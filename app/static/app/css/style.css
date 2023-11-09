@@ -7,6 +7,8 @@ body {
     height: 100vh;
 }
 
+
+
 .active-link {
     font-weight: bold;
     color: black;
@@ -29,10 +31,4 @@ body {
     align-items: center;
     margin-right: 10px;
     /* Ajustează marginea pentru a controla spațierea între elementele checkbox */
-}
-
-.btn-margin {
-
-    margin-right: 40px;
-    /* Aici puteți ajusta spațiul */
 }

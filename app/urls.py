@@ -16,5 +16,5 @@ urlpatterns = [
     path("logout/", login_required(views.Login.user_logout), name="logout"),
     path("followers/", login_required(views.Followers.as_view()), name="followers"),
     path("unfollow/", login_required(views.Followers.unfollow_user), name="unfollow"),
-    path("tickets/", login_required(views.Tickets.as_view()), name="tickets"),
+    path("tickets/", login_required(views.TicketsAndReviews.as_view()), name="tickets"),
 ]

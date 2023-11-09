@@ -10,7 +10,7 @@ from django.utils import timezone
 from app.forms import RegisterForm, LoginForm, FollowForm, TicketForm, ReviewForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-
+from django import forms
 from django.contrib.auth import logout, login, authenticate
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -129,29 +129,80 @@ class Followers(generic.FormView):
             return redirect("followers")
 
 
-class Tickets(generic.FormView):
+class TicketsAndReviews(generic.FormView):
     success_url = "tickets"
 
     def get(self, request):
         user = request.user
-        pre_filled_data = {
-            "title": "Valoare pre-umplută pentru titlu",
-            "description": "Valoare pre-umplută pentru descriere",
+        ticket_form = TicketForm()
+        review_form = ReviewForm()
+        review_form.fields["form_type"] = forms.CharField(
+            widget=forms.HiddenInput(), initial="update"
+        )
+        tickets = Ticket.objects.filter(user=request.user.id)
+        reviews = Review.objects.filter(user=request.user.id)
+        context = {
+            "tickets": tickets,
+            "reviews": reviews,
+            "ticket_form": ticket_form,
+            "review_form": review_form,
+            "user": user,
         }
-        form = ReviewForm(initial=pre_filled_data)
-        context = {"form": form, "user": user}
         return render(request, "app/posts.html", context)
 
     def post(self, request):
-        connected_user = self.request.user
-        title = self.request.POST.get("title")
-        description = self.request.POST.get("description")
-        image = self.request.FILES.get("image")
-        _, image_extension = splitext(image.name)
-        unique_name = f"{str(uuid.uuid4().hex)}{image_extension}"
-        with open(
-            os.path.join(settings.MEDIA_ROOT, "media", unique_name), "wb"
-        ) as destination:
-            for chunk in image.chunks():
-                destination.write(chunk)
+        form_type = request.POST.get("form_type")
+        ticket_id = request.POST.get("ticket")
+        review_id = request.POST.get("review")
+        match form_type:
+            case "delete":
+                if ticket_id:
+                    self._delete_ticket(ticket_id)
+                elif review_id:
+                    self._delete_review(review_id)
+            case "update":
+                if ticket_id:
+                    self._update_ticket(ticket_id)
+                elif review_id:
+                    self._update_review(review_id)
         return redirect("tickets")
+
+    def _delete_ticket(self, ticket_id):
+        ticket_to_delete = Ticket.objects.get(id=ticket_id)
+        ticket_to_delete.delete()
+        return redirect("tickets")
+
+    def _delete_review(self, review_id):
+        review_to_delete = Review.objects.get(id=review_id)
+        review_to_delete.delete()
+        return redirect("tickets")
+
+    def _update_ticket(self, ticket_id):
+        pass
+
+    def _update_review(self, review_id):
+        pass
+
+    # def _get_ticket_form(self, request):
+    #     user = request.user
+    #     pre_filled_data = {
+    #         "title": "Valoare pre-umplută pentru titlu",
+    #         "description": "Valoare pre-umplută pentru descriere",
+    #     }
+    #     form = ReviewForm(initial=pre_filled_data)
+    #     context = {"form": form, "user": user}
+    #     return render(request, "app/posts.html", context)
+
+    # def post(self, request):
+    #     connected_user = self.request.user
+    #     title = self.request.POST.get("title")
+    #     description = self.request.POST.get("description")
+    #     image = self.request.FILES.get("image")
+    #     _, image_extension = splitext(image.name)
+    #     unique_name = f"{str(uuid.uuid4().hex)}{image_extension}"
+    #     with open(
+    #         os.path.join(settings.MEDIA_ROOT, "media", unique_name), "wb"
+    #     ) as destination:
+    #         for chunk in image.chunks():
+    #             destination.write(chunk)
+    #     return redirect("tickets")

@@ -15,7 +15,9 @@ class Ticket(models.Model):
 
 
 class Review(models.Model):
-    ticket = models.ForeignKey(to=Ticket, on_delete=models.CASCADE)
+    ticket = models.ForeignKey(
+        to=Ticket, on_delete=models.CASCADE, null=True, blank=True
+    )
     rating = models.PositiveSmallIntegerField(
         # validates that rating must be between 0 and 5
         validators=[MinValueValidator(0), MaxValueValidator(5)]
@@ -26,7 +28,7 @@ class Review(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.ticket
+        return self.headline
 
 
 class UserFollows(models.Model):
