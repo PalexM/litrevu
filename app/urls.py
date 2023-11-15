@@ -16,5 +16,12 @@ urlpatterns = [
     path("logout/", login_required(views.Login.user_logout), name="logout"),
     path("followers/", login_required(views.Followers.as_view()), name="followers"),
     path("unfollow/", login_required(views.Followers.unfollow_user), name="unfollow"),
-    path("tickets/", login_required(views.TicketsAndReviews.as_view()), name="tickets"),
+    path("posts/", login_required(views.Posts.as_view()), name="posts"),
+    path("tickets/", login_required(views.TicketsManagement.as_view()), name="tickets"),
 ]
+
+
+# path("posts/") List toutes les posts et creation des formulaires
+# path (tickets/) create, update, delete
+# path (reviews) create, update, delete
+#

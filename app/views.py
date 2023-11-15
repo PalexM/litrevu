@@ -16,6 +16,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.db import IntegrityError
+import requests
 import os
 from django.conf import settings
 from pprint import pformat
@@ -129,16 +130,13 @@ class Followers(generic.FormView):
             return redirect("followers")
 
 
-class TicketsAndReviews(generic.FormView):
-    success_url = "tickets"
+class Posts(generic.FormView):
+    success_url = "posts"
 
     def get(self, request):
         user = request.user
         ticket_form = TicketForm()
         review_form = ReviewForm()
-        review_form.fields["form_type"] = forms.CharField(
-            widget=forms.HiddenInput(), initial="update"
-        )
         tickets = Ticket.objects.filter(user=request.user.id)
         reviews = Review.objects.filter(user=request.user.id)
         context = {
@@ -153,35 +151,134 @@ class TicketsAndReviews(generic.FormView):
     def post(self, request):
         form_type = request.POST.get("form_type")
         ticket_id = request.POST.get("ticket")
-        review_id = request.POST.get("review")
-        match form_type:
-            case "delete":
-                if ticket_id:
-                    self._delete_ticket(ticket_id)
-                elif review_id:
-                    self._delete_review(review_id)
-            case "update":
-                if ticket_id:
-                    self._update_ticket(ticket_id)
-                elif review_id:
-                    self._update_review(review_id)
-        return redirect("tickets")
+        request_id = request.POST.get("ticket")
+        print(request_id)
+        if form_type == "update":
+            if ticket_id:
+                return self._update_ticket(request.user)
+            elif request_id:
+                return self._update_review(request.user)
+        elif form_type == "delete":
+            if ticket_id:
+                self._delete_ticket(
+                    ticket_id,
+                )
+            elif request_id:
+                self._delete_review(
+                    ticket_id,
+                )
+        return redirect("posts")
 
-    def _delete_ticket(self, ticket_id):
+    def _delete_ticket(self, ticket_id, model_type):
         ticket_to_delete = Ticket.objects.get(id=ticket_id)
         ticket_to_delete.delete()
-        return redirect("tickets")
 
-    def _delete_review(self, review_id):
-        review_to_delete = Review.objects.get(id=review_id)
-        review_to_delete.delete()
-        return redirect("tickets")
+    def _delete_review(self, ticket_id, model_type):
+        ticket_to_delete = Ticket.objects.get(id=ticket_id)
+        ticket_to_delete.delete()
 
-    def _update_ticket(self, ticket_id):
-        pass
+    def _update_ticket(self, user):
+        tickets = Ticket.objects.filter(user=user.id)
+        reviews = Review.objects.filter(user=user.id)
+        pre_filled_data = {
+            "title": "Valoare pre-umplută pentru titlu",
+            "description": "Valoare pre-umplută pentru descriere",
+        }
+        review_form = ReviewForm()
+        ticket_form = TicketForm(initial=pre_filled_data)
+        ticket_form.fields["form_type"] = forms.CharField(
+            widget=forms.HiddenInput(), initial="update"
+        )
+        context = {
+            "ticket_form": ticket_form,
+            "review_form": review_form,
+            "user": user,
+            "tickets": tickets,
+            "reviews": reviews,
+        }
+        return render(self.request, "app/posts.html", context)
 
-    def _update_review(self, review_id):
-        pass
+    def _update_review(self, user):
+        tickets = Ticket.objects.filter(user=user.id)
+        reviews = Review.objects.filter(user=user.id)
+        pre_filled_data = {
+            "title": "Valoare pre-umplută pentru titlu",
+            "description": "Valoare pre-umplută pentru descriere",
+        }
+        review_form = ReviewForm()
+        ticket_form = TicketForm(initial=pre_filled_data)
+        ticket_form.fields["form_type"] = forms.CharField(
+            widget=forms.HiddenInput(), initial="update"
+        )
+        context = {
+            "ticket_form": ticket_form,
+            "review_form": review_form,
+            "user": user,
+            "tickets": tickets,
+            "reviews": reviews,
+        }
+        return render(self.request, "app/posts.html", context)
+
+
+class TicketsManagement(generic.FormView):
+    success_url = "posts"
+
+    def form_valid(self, form):
+        title = form.cleaned_data["title"]
+        description = form.cleaned_data["description"]
+        image = form.cleaned_data["image"]
+        print(title)
+
+    # def post(self, request):
+    #     form_type = request.POST.get("form_type")
+    #     print(request.GET.get("form_type"))
+    #     ticket_id = request.POST.get("ticket")
+    #     review_id = request.POST.get("review")
+    #     match form_type:
+    #         case "create_form":
+    #             print("Create form")
+    #         case "update_form":
+    #             print("Update form")
+    #         case "delete":
+    #             if ticket_id:
+    #                 self._delete_ticket(ticket_id)
+    #             elif review_id:
+    #                 self._delete_review(review_id)
+    #         case "modify":
+    #             if ticket_id:
+    #                 self._update_ticket(ticket_id)
+    #             elif review_id:
+    #                 self._update_review(review_id)
+    #     return redirect("tickets")
+
+    # def _delete_ticket(self, ticket_id):
+    #     ticket_to_delete = Ticket.objects.get(id=ticket_id)
+    #     ticket_to_delete.delete()
+    #     return redirect("tickets")
+
+    # def _delete_review(self, review_id):
+    #     review_to_delete = Review.objects.get(id=review_id)
+    #     review_to_delete.delete()
+    #     return redirect("tickets")
+
+    # def _update_ticket(self, ticket_id):
+    #     review_to_update = Ticket.objects.get(id=ticket_id)
+    #     current_url = self.request.get_full_path()
+    #     new_url = current_url + "?form_type=value1"
+    #     return redirect(new_url)
+
+    # def _update_review(self, review_id):
+    #     pass
+
+    # def _initialize_forms(form_type):
+    #     ticket_form = TicketForm()
+    #     review_form = ReviewForm()
+    #     ticket_form.fields["form_type"] = forms.CharField(
+    #         widget=forms.HiddenInput(), initial=form_type
+    #     )
+    #     review_form.fields["form_type"] = forms.CharField(
+    #         widget=forms.HiddenInput(), initial=form_type
+    #     )
 
     # def _get_ticket_form(self, request):
     #     user = request.user
