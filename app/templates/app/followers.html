@@ -10,17 +10,17 @@
 {% bootstrap_messages %}
 <div class="container-fluid followers">
     <div class="row">
-    <div class="col-md-4">
+        <div class="col-md-4">
             <h4 class="mb-3 text-primary text-center">Abonnés</h4>
             <table class="table table-bordered">
                 <tbody>
-                {% for user in followers %}
+                    {% for user in followers %}
                     <tr>
                         <th scope="row">{{user.user}}</th>
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
-                    {% endfor %}
         </div>
         <div class="col-md-4">
             <h4 class="mb-3 text-primary text-center">Suivre d'autres utilisateurs</h4>
@@ -37,23 +37,23 @@
             </form>
         </div>
         <div class="col-md-4">
-                <h4 class="mb-3 text-primary text-center">Abonnements</h4>
-                <table class="table table-bordered">
-                    <tbody>
-                        {% for user in following %}
-                        <tr>
-                            <th scope="row">{{user.followed_user}}</th>
-                            <td class="text-center">
-                                <form action="{% url 'unfollow' %}" method="POST">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="unfollow_user" value="{{user.followed_user.id}}">
-                                    <button type="submit" class="btn-danger">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <h4 class="mb-3 text-primary text-center">Abonnements</h4>
+            <table class="table table-bordered">
+                <tbody>
+                    {% for user in following %}
+                    <tr>
+                        <th scope="row">{{user.followed_user}}</th>
+                        <td class="text-center">
+                            <form action="{% url 'unfollow' %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="unfollow_user" value="{{user.followed_user.id}}">
+                                <button type="submit" class="btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
