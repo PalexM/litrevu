@@ -38,14 +38,8 @@ class Register(generic.FormView):
     success_url = "/login"
 
     def form_valid(self, form):
-        if self.request.user.is_authenticated:
-            user = form.save()
-            return super().form_valid(form)
-        else:
-            return redirect("/")
-
-    def form_invalid(self, form):
-        return super().form_invalid(form)
+        user = form.save()
+        return super().form_valid(form)
 
 
 class Login(generic.FormView):
@@ -144,7 +138,7 @@ class Posts(generic.FormView):
             "reviews": reviews,
             "ticket_form": ticket_form,
             "review_form": review_form,
-            "user": user,
+            "user": user
         }
         return render(request, "app/posts.html", context)
 
@@ -205,6 +199,7 @@ class Posts(generic.FormView):
             "title": "Valoare pre-umplută pentru titlu",
             "description": "Valoare pre-umplută pentru descriere",
         }
+        url = "reviews"
         review_form = ReviewForm()
         ticket_form = TicketForm(initial=pre_filled_data)
         ticket_form.fields["form_type"] = forms.CharField(
@@ -216,6 +211,7 @@ class Posts(generic.FormView):
             "user": user,
             "tickets": tickets,
             "reviews": reviews,
+            "url" : url,
         }
         return render(self.request, "app/posts.html", context)
 
@@ -303,3 +299,4 @@ class TicketsManagement(generic.FormView):
     #         for chunk in image.chunks():
     #             destination.write(chunk)
     #     return redirect("tickets")
+

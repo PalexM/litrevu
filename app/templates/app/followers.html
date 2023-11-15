@@ -7,12 +7,23 @@
 {# Display django.contrib.messages as Bootstrap alerts #}
 
 {# Display a form #}
-
-<div class="container-fluid mt-5 text-center followers">
-    <div class="row justify-content-center mt-3">
-        {% bootstrap_messages %}
-        <div class="col-md-3">
-            <h2 class="mb-3 text-primary">Suivre d'autres utilisateurs</h2>
+{% bootstrap_messages %}
+<div class="container-fluid followers">
+    <div class="row">
+    <div class="col-md-4">
+            <h4 class="mb-3 text-primary text-center">Abonnés</h4>
+            <table class="table table-bordered">
+                <tbody>
+                {% for user in followers %}
+                    <tr>
+                        <th scope="row">{{user.user}}</th>
+                    </tr>
+                </tbody>
+            </table>
+                    {% endfor %}
+        </div>
+        <div class="col-md-4">
+            <h4 class="mb-3 text-primary text-center">Suivre d'autres utilisateurs</h4>
             <form action="{% url 'followers' %}" name="follow" method="post" class="form mx-auto">
                 <div class="text-center">
                     {% csrf_token %}
@@ -25,38 +36,28 @@
                 </div>
             </form>
         </div>
-    </div>
-    <div class="row justify-content-center mt-3">
-        <div class="col-md-3">
-            <h2 class="mb-3 text-primary">Abonnés</h2>
-            <ul class="list-group">
-                {% for user in followers %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">{{user.user}}
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-    <div class="row justify-content-center mt-3">
-        <div class="col-md-3">
-            <h2 class="mb-3 text-primary">Abonnements</h2>
-            <ul class="list-group">
-                {% for user in following %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    {{user.followed_user}}
-
-                    <form action="{% url 'unfollow' %}" name="unfollow" method="post" class="ml-2">
-                        {% csrf_token %}
-                        <input type="hidden" name="unfollow_user" value="{{user.followed_user.id}}">
-                        <button type="submit" class="btn btn-danger">Désabonner</button>
-                    </form>
-
-                </li>
-                {% endfor %}
-            </ul>
+        <div class="col-md-4">
+                <h4 class="mb-3 text-primary text-center">Abonnements</h4>
+                <table class="table table-bordered">
+                    <tbody>
+                        {% for user in following %}
+                        <tr>
+                            <th scope="row">{{user.followed_user}}</th>
+                            <td class="text-center">
+                                <form action="{% url 'unfollow' %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="unfollow_user" value="{{user.followed_user.id}}">
+                                    <button type="submit" class="btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
         </div>
     </div>
 </div>
+
 
 
 {% endblock content %}

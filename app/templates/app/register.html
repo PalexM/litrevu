@@ -8,7 +8,7 @@
 {# Display django.contrib.messages as Bootstrap alerts #}
 {% bootstrap_messages %}
 
-<div class="d-flex justify-content-center align-items-center" style="height: 60vh;">
+<div class="d-flex justify-content-center align-items-center" >
     <form action="{% url 'register' %}" method="post" class="form">
         <div class="text-center">
             {% csrf_token %}

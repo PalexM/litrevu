@@ -9,7 +9,7 @@
 
 {# Display a form #}
 
-<div class="container-fluid">
+<div class="container-fluid posts">
     <div class="row">
         <div class="col-md-4">
             <h2 class=" text-center">Tickets Créé</h2>
@@ -19,7 +19,7 @@
                     <tr>
                         <th scope="row">{{ticket}}</th>
                         <td class="text-center">
-                            <form action="{% url 'tickets' %}" method="POST">
+                            <form action="{% url 'posts' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="ticket" value="{{ticket.id}}">
                                 <input type="hidden" name="form_type" value="delete">
@@ -27,7 +27,7 @@
                             </form>
                         </td>
                         <td class="text-center">
-                            <form action="{% url 'tickets' %}" method="POST">
+                            <form action="{% url 'posts' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="ticket" value="{{ticket.id}}">
                                 <input type="hidden" name="form_type" value="update">
@@ -60,7 +60,7 @@
             </div>
             <div class="container " id="review_form">
                 <h3 class="text-center">Creer un Review</h3>
-                <form action="" method="post" enctype="multipart/form-data" class="form mx-auto border ">
+                <form action="{% url 'tickets' %}" method="post" enctype="multipart/form-data" class="form mx-auto border ">
                     <div class="row">
                         <div class="text-center">
                             {% csrf_token %}
@@ -83,7 +83,7 @@
                     <tr>
                         <th scope="row">{{review}}</th>
                         <td class="text-center">
-                            <form action="{% url 'tickets' %}" method="POST">
+                            <form action="{% url 'posts' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="review" value="{{review.id}}">
                                 <input type="hidden" name="form_type" value="delete">
@@ -91,7 +91,7 @@
                             </form>
                         </td>
                         <td class="text-center">
-                            <form action="{% url 'tickets' %}" method="POST">
+                            <form action="{% url 'posts' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="review" value="{{review.id}}">
                                 <input type="hidden" name="form_type" value="update">
