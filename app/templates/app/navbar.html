@@ -1,23 +1,18 @@
 {% load bootstrap5 %}
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container">
-        <!-- Logo în stânga -->
+    <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="#">LITEREVU</a>
-
-        <!-- Buton pentru meniul responsiv pe dispozitive mobile -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Elemente de navigare în dreapta -->
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
-                <!-- {% if user.is_authenticated %} -->
-                <!-- Afișează numele utilizatorului dacă este autentificat -->
+                {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <span class="nav-link">Bună, {{ user.username }}</span>
+                    <span class="nav-link">Bonjour, {{ user.username }}</span>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Flux</a>
@@ -31,15 +26,14 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Deconnecter</a>
                 </li>
-                <!-- {% else %} -->
-                <!-- Afișează opțiunile de autentificare dacă nu este autentificat -->
+                {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'login' %}">S'identifier</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'register' %}">S'enregistrer</a>
                 </li>
-                <!-- {% endif %} -->
+                {% endif %}
             </ul>
         </div>
     </div>

@@ -163,11 +163,11 @@ class Posts(generic.FormView):
                 )
         return redirect("posts")
 
-    def _delete_ticket(self, ticket_id, model_type):
+    def _delete_ticket(self, ticket_id):
         ticket_to_delete = Ticket.objects.get(id=ticket_id)
         ticket_to_delete.delete()
 
-    def _delete_review(self, ticket_id, model_type):
+    def _delete_review(self, ticket_id):
         ticket_to_delete = Ticket.objects.get(id=ticket_id)
         ticket_to_delete.delete()
 
