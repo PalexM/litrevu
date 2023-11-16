@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import include, path
 from django.contrib.auth.decorators import login_required
 from .decorators import redirect_connected_user
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 from . import views
@@ -19,6 +21,9 @@ urlpatterns = [
     path("posts/", login_required(views.Posts.as_view()), name="posts"),
     path("tickets/", login_required(views.TicketsManagement.as_view()), name="tickets"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 # path("posts/") List toutes les posts et creation des formulaires

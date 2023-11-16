@@ -50,6 +50,7 @@
                             {% csrf_token %}
                             {% bootstrap_form ticket_form %}
                             {% buttons %}
+                            <img src="{{ ticket_form.image.value.url }}" alt="Uploaded Image" class="img-thumbnail" width="200">
                             <button type="submit" class="btn btn-primary">
                                 Valider
                             </button>
