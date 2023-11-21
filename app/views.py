@@ -177,7 +177,6 @@ class Posts(generic.FormView):
         pre_filled_data = {
             "title": ticket_data.ticket,
             "description": ticket_data.description,
-            "image": ticket_data.image,
         }
         review_form = ReviewForm()
         ticket_form = TicketForm(initial=pre_filled_data)
@@ -223,20 +222,16 @@ class Posts(generic.FormView):
         }
         return render(self.request, "app/posts.html", context)
 
-    def _get_ticket(self, ticket_id):
-        pass
-
-    def _get_review(self, review_id):
-        pass
 
 class TicketsManagement(generic.FormView):
     success_url = "posts"
-
+    form_class = TicketForm
     def form_valid(self, form):
         title = form.cleaned_data["title"]
         description = form.cleaned_data["description"]
         image = form.cleaned_data["image"]
         print(title)
+        return redirect("posts")
 
     # def post(self, request):
     #     form_type = request.POST.get("form_type")
