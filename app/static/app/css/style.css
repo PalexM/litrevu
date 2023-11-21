@@ -1,13 +1,3 @@
-body, main, html {
-    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgb(196, 120, 12)), url("../images/librarie.jpg");
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    background-position: center bottom;
-    /* Ajustează poziția imaginii */
-    height: 100%;
-}
-
-
 
 .active-link {
     font-weight: bold;
@@ -15,14 +5,7 @@ body, main, html {
     border-bottom: 2px solid blue;
 }
 
-.followers {
-    top: 15%;
-    position: absolute;
-}
 
-.posts{
-    position: absolute;
-}
 
 #id_rating {
     display: flex;

@@ -11,19 +11,19 @@
 
 <div class="container-fluid posts">
     <div class="row">
-        <div class="col-md-4">
-            <h2 class=" text-center">Tickets Créé</h2>
+        <div class="col-md-3">
+            <h4 class="mb-3 text-primary text-center">Tickets Créé</h4>
             <table class="table table-bordered">
                 <tbody>
                     {% for ticket in tickets %}
                     <tr>
-                        <th scope="row">{{ticket}}</th>
+                        <th scope="row" class="text-center h6">{{ticket}}</th>
                         <td class="text-center">
                             <form action="{% url 'posts' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="ticket" value="{{ticket.id}}">
                                 <input type="hidden" name="form_type" value="delete">
-                                <button type="submit" class="btn-danger">Delete</button>
+                                <button type="submit" class="btn-danger btn">Supprimer</button>
                             </form>
                         </td>
                         <td class="text-center">
@@ -31,7 +31,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="ticket" value="{{ticket.id}}">
                                 <input type="hidden" name="form_type" value="update">
-                                <button type="submit" class="btn-primary">Modifier</button>
+                                <button type="submit" class="btn-primary btn">Modifier</button>
                             </form>
                         </td>
 
@@ -40,9 +40,9 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="container " id="ticket_form">
-                <h3 class=" text-center">Creer un Ticket</h3>
+                <h4 class="mb-3 text-primary text-center">Creer un Ticket</h4>
                 <form action="{% url 'tickets' %}" method="post" enctype="multipart/form-data"
                     class="form mx-auto border">
                     <div class="row">
@@ -59,7 +59,7 @@
                 </form>
             </div>
             <div class="container " id="review_form">
-                <h3 class="text-center">Creer un Review</h3>
+                <h4 class="mb-3 text-primary text-center">Creer un Review</h4>
                 <form action="{% url 'tickets' %}" method="post" enctype="multipart/form-data" class="form mx-auto border ">
                     <div class="row">
                         <div class="text-center">
@@ -75,19 +75,19 @@
                 </form>
             </div>
         </div>
-        <div class="col-md-4">
-            <h2 class=" text-center">Reviews Créé</h2>
+        <div class="col-md-3">
+            <h4 class="mb-3 text-primary text-center">Reviews Créé</h4>
             <table class="table table-bordered">
                 <tbody>
                     {% for review in reviews %}
                     <tr>
-                        <th scope="row">{{review}}</th>
+                        <th scope="row" class="text-center h6">{{review}}</th>
                         <td class="text-center">
                             <form action="{% url 'posts' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="review" value="{{review.id}}">
                                 <input type="hidden" name="form_type" value="delete">
-                                <button type="submit" class="btn-danger">Delete</button>
+                                <button type="submit" class="btn-danger btn">Suprimmer</button>
                             </form>
                         </td>
                         <td class="text-center">
@@ -95,7 +95,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="review" value="{{review.id}}">
                                 <input type="hidden" name="form_type" value="update">
-                                <button type="submit" class="btn-primary">Modifier</button>
+                                <button type="submit" class="btn-primary btn">Modifier</button>
                             </form>
                         </td>
                     </tr>

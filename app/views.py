@@ -126,7 +126,6 @@ class Followers(generic.FormView):
 
 class Posts(generic.FormView):
     success_url = "posts"
-
     def get(self, request):
         user = request.user
         ticket_form = TicketForm()
@@ -145,43 +144,47 @@ class Posts(generic.FormView):
     def post(self, request):
         form_type = request.POST.get("form_type")
         ticket_id = request.POST.get("ticket")
-        request_id = request.POST.get("ticket")
-        print(request_id)
+        review_id = request.POST.get("review")
+
         if form_type == "update":
             if ticket_id:
-                return self._update_ticket(request.user)
-            elif request_id:
-                return self._update_review(request.user)
+                return self._update_ticket(request.user, ticket_id)
+            elif review_id:
+                return self._update_review(request.user, review_id)
         elif form_type == "delete":
             if ticket_id:
                 self._delete_ticket(
                     ticket_id,
                 )
-            elif request_id:
+            elif review_id:
                 self._delete_review(
                     ticket_id,
                 )
         return redirect("posts")
 
-    def _delete_ticket(self, ticket_id, model_type):
+    def _delete_ticket(self, ticket_id):
         ticket_to_delete = Ticket.objects.get(id=ticket_id)
         ticket_to_delete.delete()
 
-    def _delete_review(self, ticket_id, model_type):
+    def _delete_review(self, ticket_id):
         ticket_to_delete = Ticket.objects.get(id=ticket_id)
         ticket_to_delete.delete()
 
-    def _update_ticket(self, user):
+    def _update_ticket(self, user, ticket_id):
         tickets = Ticket.objects.filter(user=user.id)
         reviews = Review.objects.filter(user=user.id)
+        ticket_data = Ticket.objects.get(id=ticket_id)
         pre_filled_data = {
-            "title": "Valoare pre-umplută pentru titlu",
-            "description": "Valoare pre-umplută pentru descriere",
+            "title": ticket_data.ticket,
+            "description": ticket_data.description,
         }
         review_form = ReviewForm()
         ticket_form = TicketForm(initial=pre_filled_data)
         ticket_form.fields["form_type"] = forms.CharField(
             widget=forms.HiddenInput(), initial="update"
+        )
+        ticket_form.fields["ticket"] = forms.CharField(
+            widget=forms.HiddenInput(), initial=ticket_data.id
         )
         context = {
             "ticket_form": ticket_form,
@@ -192,18 +195,22 @@ class Posts(generic.FormView):
         }
         return render(self.request, "app/posts.html", context)
 
-    def _update_review(self, user):
+    def _update_review(self, user, review_id):
         tickets = Ticket.objects.filter(user=user.id)
         reviews = Review.objects.filter(user=user.id)
+        review_data = Review.objects.get(id=review_id)
         pre_filled_data = {
-            "title": "Valoare pre-umplută pentru titlu",
-            "description": "Valoare pre-umplută pentru descriere",
+            "title": review_data.headline,
+            "description": review_data.body,
         }
         url = "reviews"
-        review_form = ReviewForm()
-        ticket_form = TicketForm(initial=pre_filled_data)
-        ticket_form.fields["form_type"] = forms.CharField(
+        ticket_form = TicketForm()
+        review_form = ReviewForm(initial=pre_filled_data)
+        review_form.fields["form_type"] = forms.CharField(
             widget=forms.HiddenInput(), initial="update"
+        )
+        review_form.fields["review"] = forms.CharField(
+            widget=forms.HiddenInput(), initial=review_data.id
         )
         context = {
             "ticket_form": ticket_form,
@@ -218,12 +225,13 @@ class Posts(generic.FormView):
 
 class TicketsManagement(generic.FormView):
     success_url = "posts"
-
+    form_class = TicketForm
     def form_valid(self, form):
         title = form.cleaned_data["title"]
         description = form.cleaned_data["description"]
         image = form.cleaned_data["image"]
         print(title)
+        return redirect("posts")
 
     # def post(self, request):
     #     form_type = request.POST.get("form_type")

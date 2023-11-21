@@ -10,19 +10,19 @@
 {% bootstrap_messages %}
 <div class="container-fluid followers">
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <h4 class="mb-3 text-primary text-center">Abonnés</h4>
             <table class="table table-bordered">
                 <tbody>
                     {% for user in followers %}
                     <tr>
-                        <th scope="row">{{user.user}}</th>
+                        <th scope="row" class="text-center">{{user.user}}</th>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <h4 class="mb-3 text-primary text-center">Suivre d'autres utilisateurs</h4>
             <form action="{% url 'followers' %}" name="follow" method="post" class="form mx-auto">
                 <div class="text-center">
@@ -30,24 +30,24 @@
                     {% bootstrap_form form %}
                     {% buttons %}
                     <button type="submit" class="btn btn-primary">
-                        Submit
+                        S'abonner'
                     </button>
                     {% endbuttons %}
                 </div>
             </form>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <h4 class="mb-3 text-primary text-center">Abonnements</h4>
             <table class="table table-bordered">
                 <tbody>
                     {% for user in following %}
                     <tr>
-                        <th scope="row">{{user.followed_user}}</th>
+                        <th scope="row" class="text-center">{{user.followed_user}}</th>
                         <td class="text-center">
                             <form action="{% url 'unfollow' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="unfollow_user" value="{{user.followed_user.id}}">
-                                <button type="submit" class="btn-danger">Delete</button>
+                                <button type="submit" class="btn-danger btn">Desabonner</button>
                             </form>
                         </td>
                     </tr>
