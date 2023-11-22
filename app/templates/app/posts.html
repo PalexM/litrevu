@@ -60,7 +60,8 @@
             </div>
             <div class="container " id="review_form">
                 <h4 class="mb-3 text-primary text-center">Creer un Review</h4>
-                <form action="{% url 'tickets' %}" method="post" enctype="multipart/form-data" class="form mx-auto border ">
+                <form action="{% url 'reviews' %}" method="post" enctype="multipart/form-data"
+                    class="form mx-auto border ">
                     <div class="row">
                         <div class="text-center">
                             {% csrf_token %}

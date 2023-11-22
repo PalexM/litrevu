@@ -20,6 +20,7 @@ urlpatterns = [
     path("unfollow/", login_required(views.Followers.unfollow_user), name="unfollow"),
     path("posts/", login_required(views.Posts.as_view()), name="posts"),
     path("tickets/", login_required(views.TicketsManagement.as_view()), name="tickets"),
+    path("reviews/", login_required(views.ReviewsManagement.as_view()), name="reviews"),
 ]
 
 if settings.DEBUG:

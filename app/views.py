@@ -16,6 +16,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.db import IntegrityError
+from django.core.files.storage import default_storage
 import requests
 import os
 from django.conf import settings
@@ -66,7 +67,6 @@ class Login(generic.FormView):
         return redirect("login")
 
 
-@method_decorator(login_required(login_url="login"), name="dispatch")
 class Followers(generic.FormView):
     def get(self, request):
         form = FollowForm()
@@ -126,18 +126,25 @@ class Followers(generic.FormView):
 
 class Posts(generic.FormView):
     success_url = "posts"
+
     def get(self, request):
         user = request.user
         ticket_form = TicketForm()
         review_form = ReviewForm()
         tickets = Ticket.objects.filter(user=request.user.id)
+        ticket_form.fields["form_type"] = forms.CharField(
+            widget=forms.HiddenInput(), initial="create"
+        )
+        review_form.fields["form_type"] = forms.CharField(
+            widget=forms.HiddenInput(), initial="create"
+        )
         reviews = Review.objects.filter(user=request.user.id)
         context = {
             "tickets": tickets,
             "reviews": reviews,
             "ticket_form": ticket_form,
             "review_form": review_form,
-            "user": user
+            "user": user,
         }
         return render(request, "app/posts.html", context)
 
@@ -158,7 +165,7 @@ class Posts(generic.FormView):
                 )
             elif review_id:
                 self._delete_review(
-                    ticket_id,
+                    review_id,
                 )
         return redirect("posts")
 
@@ -166,9 +173,9 @@ class Posts(generic.FormView):
         ticket_to_delete = Ticket.objects.get(id=ticket_id)
         ticket_to_delete.delete()
 
-    def _delete_review(self, ticket_id):
-        ticket_to_delete = Ticket.objects.get(id=ticket_id)
-        ticket_to_delete.delete()
+    def _delete_review(self, review_id):
+        review_to_delete = Review.objects.get(id=review_id)
+        review_to_delete.delete()
 
     def _update_ticket(self, user, ticket_id):
         tickets = Ticket.objects.filter(user=user.id)
@@ -202,6 +209,7 @@ class Posts(generic.FormView):
         pre_filled_data = {
             "title": review_data.headline,
             "description": review_data.body,
+            "rating": review_data.rating,
         }
         url = "reviews"
         ticket_form = TicketForm()
@@ -218,7 +226,7 @@ class Posts(generic.FormView):
             "user": user,
             "tickets": tickets,
             "reviews": reviews,
-            "url" : url,
+            "url": url,
         }
         return render(self.request, "app/posts.html", context)
 
@@ -226,85 +234,82 @@ class Posts(generic.FormView):
 class TicketsManagement(generic.FormView):
     success_url = "posts"
     form_class = TicketForm
-    def form_valid(self, form):
+
+    def post(self, request):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            form_type = request.POST.get("form_type")
+            if form_type == "create":
+                return self.form_valid(form)
+            elif form_type == "update":
+                ticket_id = request.POST.get("ticket")
+                return self.form_valid(form, ticket_id=ticket_id)
+            else:
+                return redirect("posts")
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form, ticket_id=None):
+        user = User.objects.get(username=self.request.user)
         title = form.cleaned_data["title"]
         description = form.cleaned_data["description"]
-        image = form.cleaned_data["image"]
-        print(title)
+        image = form.cleaned_data.get("image")
+        if ticket_id:
+            ticket = Ticket.objects.get(id=ticket_id)
+        else:
+            ticket = Ticket(user=user)
+        ticket.ticket = title
+        ticket.description = description
+        self.image_upload(image, ticket)
+        ticket.save()
+
         return redirect("posts")
 
-    # def post(self, request):
-    #     form_type = request.POST.get("form_type")
-    #     print(request.GET.get("form_type"))
-    #     ticket_id = request.POST.get("ticket")
-    #     review_id = request.POST.get("review")
-    #     match form_type:
-    #         case "create_form":
-    #             print("Create form")
-    #         case "update_form":
-    #             print("Update form")
-    #         case "delete":
-    #             if ticket_id:
-    #                 self._delete_ticket(ticket_id)
-    #             elif review_id:
-    #                 self._delete_review(review_id)
-    #         case "modify":
-    #             if ticket_id:
-    #                 self._update_ticket(ticket_id)
-    #             elif review_id:
-    #                 self._update_review(review_id)
-    #     return redirect("tickets")
+    def image_upload(self, image, ticket):
+        if ticket.image:
+            old_path = os.path.join(settings.MEDIA_ROOT, ticket.image.name)
+            if default_storage.exists(old_path):
+                default_storage.delete(old_path)
+        if image:
+            _, image_extension = splitext(image.name)
+            unique_name = f"{uuid.uuid4().hex}{image_extension}"
+            saved_path = default_storage.save(
+                os.path.join(settings.MEDIA_ROOT, unique_name), image
+            )
+            ticket.image = unique_name
 
-    # def _delete_ticket(self, ticket_id):
-    #     ticket_to_delete = Ticket.objects.get(id=ticket_id)
-    #     ticket_to_delete.delete()
-    #     return redirect("tickets")
 
-    # def _delete_review(self, review_id):
-    #     review_to_delete = Review.objects.get(id=review_id)
-    #     review_to_delete.delete()
-    #     return redirect("tickets")
+class ReviewsManagement(generic.FormView):
+    success_url = "posts"
+    form_class = ReviewForm
 
-    # def _update_ticket(self, ticket_id):
-    #     review_to_update = Ticket.objects.get(id=ticket_id)
-    #     current_url = self.request.get_full_path()
-    #     new_url = current_url + "?form_type=value1"
-    #     return redirect(new_url)
+    def post(self, request):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            form_type = request.POST.get("form_type")
+            if form_type == "create":
+                return self.form_valid(form)
+            elif form_type == "update":
+                review_id = request.POST.get("review")
+                return self.form_valid(form, review_id=review_id)
+            else:
+                return redirect("posts")
+        else:
+            return self.form_invalid(form)
 
-    # def _update_review(self, review_id):
-    #     pass
+    def form_valid(self, form, review_id=None):
+        user = User.objects.get(username=self.request.user)
+        title = form.cleaned_data["title"]
+        description = form.cleaned_data["description"]
+        rating = form.cleaned_data["rating"]
+        print(title)
+        if review_id:
+            review = Review.objects.get(id=review_id)
+        else:
+            review = Review(user=user)
+        review.headline = title
+        review.body = description
+        review.rating = rating
+        review.save()
 
-    # def _initialize_forms(form_type):
-    #     ticket_form = TicketForm()
-    #     review_form = ReviewForm()
-    #     ticket_form.fields["form_type"] = forms.CharField(
-    #         widget=forms.HiddenInput(), initial=form_type
-    #     )
-    #     review_form.fields["form_type"] = forms.CharField(
-    #         widget=forms.HiddenInput(), initial=form_type
-    #     )
-
-    # def _get_ticket_form(self, request):
-    #     user = request.user
-    #     pre_filled_data = {
-    #         "title": "Valoare pre-umplută pentru titlu",
-    #         "description": "Valoare pre-umplută pentru descriere",
-    #     }
-    #     form = ReviewForm(initial=pre_filled_data)
-    #     context = {"form": form, "user": user}
-    #     return render(request, "app/posts.html", context)
-
-    # def post(self, request):
-    #     connected_user = self.request.user
-    #     title = self.request.POST.get("title")
-    #     description = self.request.POST.get("description")
-    #     image = self.request.FILES.get("image")
-    #     _, image_extension = splitext(image.name)
-    #     unique_name = f"{str(uuid.uuid4().hex)}{image_extension}"
-    #     with open(
-    #         os.path.join(settings.MEDIA_ROOT, "media", unique_name), "wb"
-    #     ) as destination:
-    #         for chunk in image.chunks():
-    #             destination.write(chunk)
-    #     return redirect("tickets")
-
+        return redirect("posts")
