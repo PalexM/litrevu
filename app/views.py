@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 from app.forms import RegisterForm, LoginForm, FollowForm, TicketForm, ReviewForm
+
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django import forms
@@ -24,14 +25,43 @@ from pprint import pformat
 from django.utils.text import slugify
 import uuid
 from os.path import splitext
+from itertools import chain
+from django.db.models import CharField, Value
+from django.core import serializers
+import json
+from django.db.models import Q
 
 
 class IndexView(generic.ListView):
     def get(self, request):
-        user = request.user
-        context = {"user": user}
-        return render(request, "app/index.html", context)
+        self._get_posts_for_feed()
 
+        context = {"user": 'user'}
+        return render(request, "app/index.html", context)
+    
+    def _get_posts_for_feed(self):
+        user = self.request.user
+        user_following = UserFollows.objects.filter(user=user).values_list("followed_user",flat=True)
+
+        # Tickets cree par les amis
+        tickets_from_friends = Ticket.objects.filter(user__in=user_following)
+        # Reviews cree par les amis 
+        reviews_from_friends = Ticket.objects.filter(user__in=user_following)
+        # Reviews creer par les amis de tes amis en reponse au tickets creer par tes amis
+        friends_of_friends = UserFollows.objects.filter(user__in=user_following).values_list('followed_user', flat=True)
+        reviews_of_friends_of_friends = Review.objects.filter(
+            Q(user__in=friends_of_friends) or 
+            Q(ticket__in=tickets_from_friends)
+        )
+        tickets_for_reviews_of_friends_of_friends = Ticket.objects.filter(id__in=reviews_of_friends_of_friends.values('ticket_id'))
+        self._debug(tickets_from_friends)
+
+
+    
+
+    def _debug(self,data):
+        json_tickets = serializers.serialize('json', data)
+        print(json_tickets)
 
 class Register(generic.FormView):
     template_name = "app/register.html"

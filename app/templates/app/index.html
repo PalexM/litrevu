@@ -3,8 +3,9 @@
 {% load static %}
 {% block content %}
 
-<p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Obcaecati atque, sapiente incidunt fugiat a, iusto
-    voluptates possimus ducimus quaerat quisquam nemo voluptas labore quia pariatur fuga culpa maxime? Vitae, odit?</p>
+{% for key, value in  posts.items%}
+<p>{{ value }}</p>
+{% endfor %}
 
 
 {% endblock content %}
