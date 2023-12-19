@@ -3,9 +3,59 @@
 {% load static %}
 {% block content %}
 
-{% for key, value in  posts.items%}
-<p>{{ value }}</p>
-{% endfor %}
+<div class="container mt-4">
+    {% for ticket, ticket_info in ticket_review_map.items %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">{{ ticket.ticket }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Scris de {{ ticket_info.author }} la {{ ticket_info.created_at }}
+            </h6>
+            {% if not ticket_info.is_friend %}
+            <a href="" class="card-link">Adaugă ca prieten</a>
+            {% else %}
+            <a href="" class="card-link">Elimină prietenia</a>
+            {% endif %}
+
+            <p class="card-text">{{ ticket.description }}</p>
+
+            <!-- Formular pentru adăugarea unei recenzii -->
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <textarea class="form-control" name="review_body" placeholder="Adaugă un comentariu..."></textarea>
+                </div>
+
+                <!-- Buton radio pentru rating -->
+                <div class="mb-3">
+                    <label>Rating:</label>
+                    {% for i in "12345" %}
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="rating" id="rating{{ i }}" value="{{ i }}"
+                            required>
+                        <label class="form-check-label" for="rating{{ i }}">{{ i }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" class="btn btn-primary">Comentează</button>
+            </form>
+
+            <!-- Afișează recenziile pentru acest bilet -->
+            <div class="mt-4">
+                <h6>Comentarii:</h6>
+                {% for review_info in ticket_info.reviews %}
+                <div class="border-top pt-2">
+                    <strong>{{ review_info.author }}</strong> la {{ review_info.created_at }}:
+                    <p>{{ review_info.review.body }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Nu există bilete sau recenzii de afișat.</p>
+    {% endfor %}
+</div>
 
 
 {% endblock content %}

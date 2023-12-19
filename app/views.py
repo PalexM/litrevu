@@ -34,34 +34,45 @@ from django.db.models import Q
 
 class IndexView(generic.ListView):
     def get(self, request):
-        self._get_posts_for_feed()
-
-        context = {"user": 'user'}
-        return render(request, "app/index.html", context)
-    
-    def _get_posts_for_feed(self):
         user = self.request.user
-        user_following = UserFollows.objects.filter(user=user).values_list("followed_user",flat=True)
-
-        # Tickets cree par les amis
-        tickets_from_friends = Ticket.objects.filter(user__in=user_following)
-        # Reviews cree par les amis 
-        reviews_from_friends = Ticket.objects.filter(user__in=user_following)
-        # Reviews creer par les amis de tes amis en reponse au tickets creer par tes amis
-        friends_of_friends = UserFollows.objects.filter(user__in=user_following).values_list('followed_user', flat=True)
-        reviews_of_friends_of_friends = Review.objects.filter(
-            Q(user__in=friends_of_friends) or 
-            Q(ticket__in=tickets_from_friends)
+        followed_users = UserFollows.objects.filter(user=user).values_list(
+            "followed_user", flat=True
         )
-        tickets_for_reviews_of_friends_of_friends = Ticket.objects.filter(id__in=reviews_of_friends_of_friends.values('ticket_id'))
-        self._debug(tickets_from_friends)
 
+        # Colectează biletele
+        tickets = Ticket.objects.filter(
+            Q(user__in=followed_users) | Q(user=user)
+        ).order_by("-time_created")
 
-    
+        # Colectează toate recenziile, inclusiv cele ale prietenilor pentru biletele altor persoane
+        reviews = (
+            Review.objects.filter(Q(user=user) | Q(user__in=followed_users))
+            .select_related("ticket")
+            .order_by("-created_at")
+        )
 
-    def _debug(self,data):
-        json_tickets = serializers.serialize('json', data)
-        print(json_tickets)
+        # Creează un dicționar pentru a grupa recenziile pe bilete
+        ticket_review_map = {}
+        for ticket in Ticket.objects.all():
+            ticket_review_map[ticket] = {
+                # ... informații despre bilet ...
+                "reviews": []
+            }
+
+        for review in reviews:
+            ticket = review.ticket
+            if ticket:
+                if ticket in ticket_review_map:
+                    ticket_review_map[ticket]["reviews"].append(review)
+            else:
+                # Adaugă recenziile fără bilete într-o categorie separată
+                ticket_review_map.setdefault("recenzii_fara_bilet", []).append(review)
+                context = {
+                    "ticket_review_map": ticket_review_map,
+                }
+
+        return render(self.request, "app/index.html", context)
+
 
 class Register(generic.FormView):
     template_name = "app/register.html"
