@@ -8,24 +8,24 @@
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">{{ ticket.ticket }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">Scris de {{ ticket_info.author }} la {{ ticket_info.created_at }}
+            <h6 class="card-subtitle mb-2 text-muted">Cree par {{ ticket_info.author }} le {{ ticket_info.created_at }}
             </h6>
             {% if not ticket_info.is_friend %}
-            <a href="" class="card-link">Adaugă ca prieten</a>
+            <a href="" class="card-link">S'abonner</a>
             {% else %}
-            <a href="" class="card-link">Elimină prietenia</a>
+            <a href="" class="card-link">Se desabonner</a>
             {% endif %}
 
             <p class="card-text">{{ ticket.description }}</p>
 
-            <!-- Formular pentru adăugarea unei recenzii -->
+            <!-- Form for reviews -->
             <form action="" method="post">
                 {% csrf_token %}
                 <div class="mb-3">
                     <textarea class="form-control" name="review_body" placeholder="Adaugă un comentariu..."></textarea>
                 </div>
 
-                <!-- Buton radio pentru rating -->
+                <!-- Radio Buttons -->
                 <div class="mb-3">
                     <label>Rating:</label>
                     {% for i in "12345" %}
@@ -37,12 +37,12 @@
                     {% endfor %}
                 </div>
 
-                <button type="submit" class="btn btn-primary">Comentează</button>
+                <button type="submit" class="btn btn-primary">Ajouter un Review</button>
             </form>
 
-            <!-- Afișează recenziile pentru acest bilet -->
+            <!--  -->
             <div class="mt-4">
-                <h6>Comentarii:</h6>
+                <h6>Reviews:</h6>
                 {% for review_info in ticket_info.reviews %}
                 <div class="border-top pt-2">
                     <strong>{{ review_info.author }}</strong> la {{ review_info.created_at }}:
@@ -53,7 +53,7 @@
         </div>
     </div>
     {% empty %}
-    <p>Nu există bilete sau recenzii de afișat.</p>
+    <p>Pas de Review a aficher </p>
     {% endfor %}
 </div>
 

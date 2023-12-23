@@ -39,25 +39,19 @@ class IndexView(generic.ListView):
             "followed_user", flat=True
         )
 
-        # Colectează biletele
         tickets = Ticket.objects.filter(
             Q(user__in=followed_users) | Q(user=user)
         ).order_by("-time_created")
 
-        # Colectează toate recenziile, inclusiv cele ale prietenilor pentru biletele altor persoane
         reviews = (
             Review.objects.filter(Q(user=user) | Q(user__in=followed_users))
             .select_related("ticket")
-            .order_by("-created_at")
+            .order_by("-time_created")
         )
 
-        # Creează un dicționar pentru a grupa recenziile pe bilete
         ticket_review_map = {}
         for ticket in Ticket.objects.all():
-            ticket_review_map[ticket] = {
-                # ... informații despre bilet ...
-                "reviews": []
-            }
+            ticket_review_map[ticket] = {"reviews": []}
 
         for review in reviews:
             ticket = review.ticket
@@ -65,7 +59,6 @@ class IndexView(generic.ListView):
                 if ticket in ticket_review_map:
                     ticket_review_map[ticket]["reviews"].append(review)
             else:
-                # Adaugă recenziile fără bilete într-o categorie separată
                 ticket_review_map.setdefault("recenzii_fara_bilet", []).append(review)
                 context = {
                     "ticket_review_map": ticket_review_map,
