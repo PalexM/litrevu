@@ -39,7 +39,7 @@ class ReviewForm(forms.Form):
     description = forms.CharField(
         widget=forms.Textarea, label="Description", required=True
     )
-    rating_choices = [(i, i) for i in range(5)]
+    rating_choices = [(i, i) for i in range(1, 6)]
     rating = forms.ChoiceField(
         widget=forms.RadioSelect,
         choices=rating_choices,

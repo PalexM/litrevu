@@ -39,9 +39,18 @@ class IndexView(generic.ListView):
             "followed_user", flat=True
         )
 
-        tickets = Ticket.objects.filter(
-            Q(user__in=followed_users) | Q(user=user)
-        ).order_by("-time_created")
+        tickets = (
+            Ticket.objects.filter(
+                Q(user__in=followed_users)
+                | Q(
+                    id__in=Review.objects.filter(user__in=followed_users).values_list(
+                        "ticket", flat=True
+                    )
+                )
+            )
+            .distinct()
+            .order_by("-time_created")
+        )
 
         reviews = (
             Review.objects.filter(Q(user=user) | Q(user__in=followed_users))
@@ -50,7 +59,7 @@ class IndexView(generic.ListView):
         )
 
         ticket_review_map = {}
-        for ticket in Ticket.objects.all():
+        for ticket in tickets:
             ticket_review_map[ticket] = {"reviews": []}
 
         for review in reviews:
@@ -347,3 +356,12 @@ class ReviewsManagement(generic.FormView):
         review.save()
 
         return redirect("posts")
+
+    @staticmethod
+    def review_from_feed(request):
+        if request.method == "POST":
+            review = request.POST.get("description")
+            rating = request.POST.get("rating")
+            ticket_id = request.POST.get("ticket_id")
+            print(rating)
+        return redirect("flux")

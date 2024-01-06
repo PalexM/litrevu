@@ -3,59 +3,87 @@
 {% load static %}
 {% block content %}
 
-<div class="container mt-4">
-    {% for ticket, ticket_info in ticket_review_map.items %}
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">{{ ticket.ticket }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">Cree par {{ ticket_info.author }} le {{ ticket_info.created_at }}
-            </h6>
-            {% if not ticket_info.is_friend %}
-            <a href="" class="card-link">S'abonner</a>
-            {% else %}
-            <a href="" class="card-link">Se desabonner</a>
-            {% endif %}
 
-            <p class="card-text">{{ ticket.description }}</p>
-
-            <!-- Form for reviews -->
-            <form action="" method="post">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <textarea class="form-control" name="review_body" placeholder="Adaugă un comentariu..."></textarea>
-                </div>
-
-                <!-- Radio Buttons -->
-                <div class="mb-3">
-                    <label>Rating:</label>
-                    {% for i in "12345" %}
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="rating" id="rating{{ i }}" value="{{ i }}"
-                            required>
-                        <label class="form-check-label" for="rating{{ i }}">{{ i }}</label>
+<section class=" container newsfeed my-5 ">
+    {% for ticket, review in ticket_review_map.items %}
+    <div class="container post col-md-8 mt-5">
+        <div class="card border">
+            <div class="card-body">
+                <div class="container">
+                    <!-- Author -->
+                    <div class="row">
+                        <div class="mt-2">
+                            <h5 class=" h5 fw-bold text-uppercase float-end text-primary">{{ticket.user}} </h4>
+                        </div>
+                        <div class="mt-2">
+                            <h6 class=" h6 fw-bold text-uppercase">{{ticket.ticket}} </h4>
+                        </div>
                     </div>
+                    <div class="row">
+                        <div class="card-body">
+                            <p class="fst-italic ">
+                                {{ticket.description}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Photo -->
+            <div class="bg-image hover-overlay ripple shadow-1-strong rounded-0" data-ripple-color="light">
+                {% if ticket.image %}
+                <img src="{{ticket.image.url}}" class="w-100" />
+                {% endif %}
+                <a href="#!">
+                    <div class="mask" style="background-color: rgba(251, 251, 251, 0.2)"></div>
+                </a>
+
+            </div>
+            <hr class="my-4">
+            <!-- Interactions  -->
+            <div class="card-body ">
+                <div class="container">
+                    <!-- Comments   -->
+                    {% for review_info in review.reviews %}
+                    <div class="row">
+                        <p>
+                            <strong class="text-dark">{{review_info.user}}</strong> {{review_info.review}}
+                        </p>
+                        <small class="my-1">{{review_info.time_created}}</small>
+                    </div>
+                    <hr />
                     {% endfor %}
-                </div>
 
-                <button type="submit" class="btn btn-primary">Ajouter un Review</button>
-            </form>
-
-            <!--  -->
-            <div class="mt-4">
-                <h6>Reviews:</h6>
-                {% for review_info in ticket_info.reviews %}
-                <div class="border-top pt-2">
-                    <strong>{{ review_info.author }}</strong> la {{ review_info.created_at }}:
-                    <p>{{ review_info.review.body }}</p>
+                    <!-- Comment form -->
+                    <div class="row mt-2">
+                        <form action="{% url 'review' %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <!-- Câmp ascuns pentru ticket_id, dacă este necesar -->
+                                    <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
+                                    <textarea id="review" class="form-control" name="description"
+                                        placeholder="Leave a comment" required></textarea>
+                                    {% for i in "12345" %}
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="rating" id="rating{{ i }}"
+                                            value="{{ i }}" required>
+                                        <label class="form-check-label" for="rating{{ i }}">{{ i }}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-primary">Poster</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                {% endfor %}
             </div>
         </div>
     </div>
     {% empty %}
     <p>Pas de Review a aficher </p>
     {% endfor %}
-</div>
-
+</section>
 
 {% endblock content %}

@@ -24,7 +24,7 @@
         </div>
         <div class="col-md-6">
             <h4 class="mb-3 text-primary text-center">Suivre d'autres utilisateurs</h4>
-            <form action="{% url 'followers' %}" name="follow" method="post" class="form mx-auto">
+            <form action="{% url 'followers'  %}" name="follow" method="post" class="form mx-auto">
                 <div class="text-center">
                     {% csrf_token %}
                     {% bootstrap_form form %}

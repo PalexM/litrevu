@@ -10,7 +10,7 @@ from . import views
 
 
 urlpatterns = [
-    path("", login_required(views.IndexView.as_view()), name="index"),
+    path("flux/", login_required(views.IndexView.as_view()), name="flux"),
     path(
         "register/", redirect_connected_user(views.Register.as_view()), name="register"
     ),
@@ -21,6 +21,11 @@ urlpatterns = [
     path("posts/", login_required(views.Posts.as_view()), name="posts"),
     path("tickets/", login_required(views.TicketsManagement.as_view()), name="tickets"),
     path("reviews/", login_required(views.ReviewsManagement.as_view()), name="reviews"),
+    path(
+        "review/",
+        login_required(views.ReviewsManagement.review_from_feed),
+        name="review",
+    ),
 ]
 
 if settings.DEBUG:
