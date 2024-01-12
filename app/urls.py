@@ -10,6 +10,7 @@ from . import views
 
 
 urlpatterns = [
+    path("", login_required(views.IndexView.as_view()), name="index"),
     path("flux/", login_required(views.IndexView.as_view()), name="flux"),
     path(
         "register/", redirect_connected_user(views.Register.as_view()), name="register"

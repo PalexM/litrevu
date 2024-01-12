@@ -30,53 +30,68 @@ from django.db.models import CharField, Value
 from django.core import serializers
 import json
 from django.db.models import Q
+import pprint
 
 
 class IndexView(generic.ListView):
+    """Feed and Index Management"""
+
     def get(self, request):
         user = self.request.user
+
+        # following users
         followed_users = UserFollows.objects.filter(user=user).values_list(
             "followed_user", flat=True
         )
 
-        tickets = (
-            Ticket.objects.filter(
-                Q(user__in=followed_users)
-                | Q(
-                    id__in=Review.objects.filter(user__in=followed_users).values_list(
-                        "ticket", flat=True
-                    )
-                )
-            )
+        # friends tickets and connected user
+        user_and_friends_tickets = (
+            Ticket.objects.filter(Q(user=user) | Q(user__in=followed_users))
+            .distinct()
+            .order_by("-time_created")
+        )
+        # friends reviews and connected user
+        user_and_friends_reviews = (
+            Review.objects.filter(Q(user=user) | Q(user__in=followed_users))
             .distinct()
             .order_by("-time_created")
         )
 
-        reviews = (
-            Review.objects.filter(Q(user=user) | Q(user__in=followed_users))
-            .select_related("ticket")
-            .order_by("-time_created")
-        )
+        fake_ticket_id = "fake_ticket"
 
-        ticket_review_map = {}
-        for ticket in tickets:
-            ticket_review_map[ticket] = {"reviews": []}
+        # build feed
+        feed = {"tickets": {}}
+        for ticket in user_and_friends_tickets:
+            feed["tickets"][ticket] = {"reviews": []}
 
-        for review in reviews:
-            ticket = review.ticket
-            if ticket:
-                if ticket in ticket_review_map:
-                    ticket_review_map[ticket]["reviews"].append(review)
+        for review in user_and_friends_reviews:
+            if review.ticket:
+                feed["tickets"].setdefault(review.ticket, {"reviews": []})[
+                    "reviews"
+                ].append(review)
             else:
-                ticket_review_map.setdefault("recenzii_fara_bilet", []).append(review)
-                context = {
-                    "ticket_review_map": ticket_review_map,
+                # fake ticket for reviews without ticket
+                fake_ticket = {
+                    "title": "",
+                    "description": "",
+                    "time_created": review.time_created,
                 }
+                fake_ticket_id = "fake_" + str(review.id)
+                feed["tickets"][fake_ticket_id] = {
+                    "ticket": fake_ticket,
+                    "reviews": [review],
+                }
+
+        context = {
+            "feed": feed,
+        }
 
         return render(self.request, "app/index.html", context)
 
 
 class Register(generic.FormView):
+    """Register Management"""
+
     template_name = "app/register.html"
     form_class = RegisterForm
     success_url = "/login"
@@ -87,6 +102,8 @@ class Register(generic.FormView):
 
 
 class Login(generic.FormView):
+    """Login Management"""
+
     template_name = "app/login.html"
     form_class = LoginForm
     success_url = "/"
@@ -111,6 +128,8 @@ class Login(generic.FormView):
 
 
 class Followers(generic.FormView):
+    """Followers Management"""
+
     def get(self, request):
         form = FollowForm()
         connected_user = request.user
@@ -168,6 +187,8 @@ class Followers(generic.FormView):
 
 
 class Posts(generic.FormView):
+    """Update and delete Tickets and Reviews"""
+
     success_url = "posts"
 
     def get(self, request):
@@ -275,6 +296,8 @@ class Posts(generic.FormView):
 
 
 class TicketsManagement(generic.FormView):
+    """Create Ticket"""
+
     success_url = "posts"
     form_class = TicketForm
 
@@ -323,6 +346,8 @@ class TicketsManagement(generic.FormView):
 
 
 class ReviewsManagement(generic.FormView):
+    """Create Reviews"""
+
     success_url = "posts"
     form_class = ReviewForm
 
@@ -360,8 +385,20 @@ class ReviewsManagement(generic.FormView):
     @staticmethod
     def review_from_feed(request):
         if request.method == "POST":
+            user = request.user
             review = request.POST.get("description")
             rating = request.POST.get("rating")
             ticket_id = request.POST.get("ticket_id")
-            print(rating)
+
+            ticket_obj = Ticket.objects.get(id=ticket_id)
+            new_review = Review(
+                ticket=ticket_obj,
+                user=user,
+                rating=rating,
+                body=review,
+                headline="Review de ticket " + ticket_id,
+                time_created=timezone.now,
+            )
+            new_review.save()
+
         return redirect("flux")

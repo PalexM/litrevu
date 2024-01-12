@@ -18,3 +18,11 @@
     margin-right: 10px;
     /* Ajustează marginea pentru a controla spațierea între elementele checkbox */
 }
+
+.star {
+    color: rgb(153, 102, 0);
+    /* O culoare mai închisă pentru un contrast mai bun */
+    background-color: rgb(255, 255, 255);
+    /* Fundal alb */
+    /* Alte stiluri pentru '.star', dacă sunt necesare */
+}

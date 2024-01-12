@@ -5,84 +5,117 @@
 
 
 <section class=" container newsfeed my-5 ">
-    {% for ticket, review in ticket_review_map.items %}
+
+
+
+
+    {% for ticket, data in feed.tickets.items %}
     <div class="container post col-md-8 mt-5">
+        {% if not "fake_" in ticket %}
         <div class="card border">
             <div class="card-body">
                 <div class="container">
                     <!-- Author -->
                     <div class="row">
                         <div class="mt-2">
-                            <h5 class=" h5 fw-bold text-uppercase float-end text-primary">{{ticket.user}} </h4>
+                            <h2 class=" h5 fw-bold text-uppercase float-end text-primary">{{ticket.user}} </h2>
                         </div>
                         <div class="mt-2">
-                            <h6 class=" h6 fw-bold text-uppercase">{{ticket.ticket}} </h4>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="card-body">
-                            <p class="fst-italic ">
-                                {{ticket.description}}
-                            </p>
+                            <h3 class=" h6 fw-bold text-uppercase">{{ticket.ticket}} </h3>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- Photo -->
-            <div class="bg-image hover-overlay ripple shadow-1-strong rounded-0" data-ripple-color="light">
-                {% if ticket.image %}
-                <img src="{{ticket.image.url}}" class="w-100" />
-                {% endif %}
-                <a href="#!">
-                    <div class="mask" style="background-color: rgba(251, 251, 251, 0.2)"></div>
-                </a>
 
+            <figure class="figure">
+                <div class="card-body">
+                    <figcaption class="figure-caption text-end">
+                        <p class="fst-italic ">
+                            {{ticket.description}}
+                        </p>
+                    </figcaption>
+                </div>
+                {% if ticket.image %}
+                <img src="{{ticket.image.url}}" alt="description visuele {{ticket.id}}" class="w-100"
+                    class="figure-img img-fluid rounded shadow-3 mb-3" />
+                {% endif %}
+                <figcaption class="figure-caption text-end">
+                    <p class="">
+                        {{ticket.time_created}}
+                    </p>
+                </figcaption>
+            </figure>
+
+            <div class="container">
+                <hr />
             </div>
-            <hr class="my-4">
+            {% endif %}
             <!-- Interactions  -->
+
             <div class="card-body ">
                 <div class="container">
                     <!-- Comments   -->
-                    {% for review_info in review.reviews %}
+                    {% for review in data.reviews %}
                     <div class="row">
-                        <p>
-                            <strong class="text-dark">{{review_info.user}}</strong> {{review_info.review}}
-                        </p>
-                        <small class="my-1">{{review_info.time_created}}</small>
+                        <div class="card-body">
+                            <div>
+                                <h4 class="h6 fw-bold text-primary">{{ review.user }}</h4>
+                            </div>
+                            <p class="fst-italic ">
+                                {{ review.body }}
+                            </p>
+                            <!-- Afișarea steluțelor -->
+                            <div>
+                                {% for i in review.get_rating_range %}
+                                <span class="star">&#9733;</span> <!-- Simbolul steluței -->
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <small class="">{{ review.time_created }}</small>
                     </div>
                     <hr />
                     {% endfor %}
 
                     <!-- Comment form -->
+                    {% if not "fake_" in ticket %}
                     <div class="row mt-2">
                         <form action="{% url 'review' %}" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col-md-10">
-                                    <!-- Câmp ascuns pentru ticket_id, dacă este necesar -->
                                     <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
-                                    <textarea id="review" class="form-control" name="description"
-                                        placeholder="Leave a comment" required></textarea>
-                                    {% for i in "12345" %}
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="rating" id="rating{{ i }}"
-                                            value="{{ i }}" required>
-                                        <label class="form-check-label" for="rating{{ i }}">{{ i }}</label>
-                                    </div>
-                                    {% endfor %}
+
+
+                                    <label for="review_{{ticket.id}}">Review:</label>
+                                    <textarea id="review_{{ticket.id}}" class="form-control" name="description"
+                                        placeholder="Creer un review" required></textarea>
+
+                                    <fieldset>
+                                        <legend>Rating</legend>
+                                        {% for i in "12345" %}
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="rating"
+                                                id="rating{{ i }}_{{ticket.id}}" value="{{ i }}" required>
+                                            <label class="form-check-label" for="rating{{ i }}_{{ticket.id}}">
+                                                {{ i }}
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </fieldset>
                                 </div>
                                 <div class="col-md-2">
-                                    <button type="submit" class="btn btn-primary">Poster</button>
+                                    <button type="submit" class="btn btn-primary">Post</button>
                                 </div>
                             </div>
                         </form>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-    {% empty %}
-    <p>Pas de Review a aficher </p>
+
+
     {% endfor %}
 </section>
 

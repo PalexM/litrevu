@@ -23,7 +23,10 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="ticket" value="{{ticket.id}}">
                                 <input type="hidden" name="form_type" value="delete">
-                                <button type="submit" class="btn-danger btn">Supprimer</button>
+                                <button type="submit" class="btn-danger btn"
+                                    style="color: rgb(255, 255, 255); background-color: rgb(128, 0, 0);">
+                                    Supprimer
+                                </button>
                             </form>
                         </td>
                         <td class="text-center">
@@ -89,7 +92,10 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="review" value="{{review.id}}">
                                 <input type="hidden" name="form_type" value="delete">
-                                <button type="submit" class="btn-danger btn">Suprimmer</button>
+                                <button type="submit" class="btn-danger btn"
+                                    style="color: rgb(255, 255, 255); background-color: rgb(128, 0, 0);">
+                                    Supprimer
+                                </button>
                             </form>
                         </td>
                         <td class="text-center">

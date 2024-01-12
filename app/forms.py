@@ -4,6 +4,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 
 class LoginForm(AuthenticationForm):
+    """Autentification Form"""
+
     username = forms.CharField(max_length=65, label="Utilisateur", required=True)
     password = forms.CharField(
         max_length=65, label="Mot de passe", widget=forms.PasswordInput, required=True
@@ -11,6 +13,8 @@ class LoginForm(AuthenticationForm):
 
 
 class RegisterForm(UserCreationForm):
+    """Register Form"""
+
     def __init__(self, *args, **kwargs):
         super(RegisterForm, self).__init__(*args, **kwargs)
         self.fields["username"].label = "Utilisateur"
@@ -23,10 +27,14 @@ class RegisterForm(UserCreationForm):
 
 
 class FollowForm(forms.Form):
+    """Follow user Form"""
+
     follow_user = forms.CharField(max_length=65, label="Utilisateur", required=True)
 
 
 class TicketForm(forms.Form):
+    """Create Ticket Form"""
+
     title = forms.CharField(max_length=128, label="Titre", required=True)
     description = forms.CharField(
         widget=forms.Textarea, label="Description", required=True
@@ -35,6 +43,8 @@ class TicketForm(forms.Form):
 
 
 class ReviewForm(forms.Form):
+    """Create Review Form"""
+
     title = forms.CharField(max_length=128, label="Titre", required=True)
     description = forms.CharField(
         widget=forms.Textarea, label="Description", required=True

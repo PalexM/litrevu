@@ -4,6 +4,8 @@ from django.db import models
 
 
 class Ticket(models.Model):
+    """Create a Ticket Model"""
+
     ticket = models.CharField(max_length=128)
     description = models.TextField(max_length=2048, blank=True)
     user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -15,6 +17,8 @@ class Ticket(models.Model):
 
 
 class Review(models.Model):
+    """Create a Review Model"""
+
     ticket = models.ForeignKey(
         to=Ticket, on_delete=models.CASCADE, null=True, blank=True
     )
@@ -22,7 +26,7 @@ class Review(models.Model):
         # validates that rating must be between 0 and 5
         validators=[MinValueValidator(0), MaxValueValidator(5)]
     )
-    headline = models.CharField(max_length=128)
+    headline = models.CharField(max_length=128, blank=True)
     body = models.CharField(max_length=8192, blank=True)
     user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     time_created = models.DateTimeField(auto_now_add=True)
@@ -30,8 +34,13 @@ class Review(models.Model):
     def __str__(self):
         return self.headline
 
+    def get_rating_range(self):
+        return range(int(self.rating))
+
 
 class UserFollows(models.Model):
+    """Create a User Relation Model"""
+
     user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="following"
     )
@@ -42,8 +51,6 @@ class UserFollows(models.Model):
     )
 
     class Meta:
-        # ensures we don't get multiple UserFollows instances
-        # for unique user-user_followed pairs
         unique_together = (
             "user",
             "followed_user",
