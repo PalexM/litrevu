@@ -47,7 +47,8 @@
                             <form action="{% url 'unfollow' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="unfollow_user" value="{{user.followed_user.id}}">
-                                <button type="submit" class="btn-danger btn">Desabonner</button>
+                                <button type="submit" class="btn-danger btn"
+                                    style="color: rgb(255, 255, 255); background-color: rgb(128, 0, 0);">Desabonner</button>
                             </form>
                         </td>
                     </tr>
