@@ -1,5 +1,4 @@
-from django.contrib import admin
-from django.urls import include, path
+from django.urls import path
 from django.contrib.auth.decorators import login_required
 from .decorators import redirect_connected_user
 from django.conf import settings

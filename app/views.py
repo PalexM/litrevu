@@ -1,36 +1,19 @@
-from typing import Any
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from .models import Ticket, Review, UserFollows
-from django.template import loader
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import Http404
-from django.urls import reverse
+from django.shortcuts import render, redirect
 from django.views import generic
 from django.utils import timezone
 from app.forms import RegisterForm, LoginForm, FollowForm, TicketForm, ReviewForm
-
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
 from django import forms
 from django.contrib.auth import logout, login, authenticate
-from django.views import View
-from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.db import IntegrityError
 from django.core.files.storage import default_storage
-import requests
 import os
 from django.conf import settings
-from pprint import pformat
-from django.utils.text import slugify
 import uuid
 from os.path import splitext
-from itertools import chain
-from django.db.models import CharField, Value
-from django.core import serializers
-import json
 from django.db.models import Q
-import pprint
 
 
 class IndexView(generic.ListView):
@@ -97,7 +80,7 @@ class Register(generic.FormView):
     success_url = "/login"
 
     def form_valid(self, form):
-        user = form.save()
+        form.save()
         return super().form_valid(form)
 
 
@@ -339,9 +322,7 @@ class TicketsManagement(generic.FormView):
         if image:
             _, image_extension = splitext(image.name)
             unique_name = f"{uuid.uuid4().hex}{image_extension}"
-            saved_path = default_storage.save(
-                os.path.join(settings.MEDIA_ROOT, unique_name), image
-            )
+            default_storage.save(os.path.join(settings.MEDIA_ROOT, unique_name), image)
             ticket.image = unique_name
 
 
