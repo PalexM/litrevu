@@ -15,9 +15,12 @@ Pour exécuter ce projet, vous aurez besoin d'avoir installé Python, Docker, et
 ### Avec un Environnement Virtuel Python
 1. **Cloner le dépôt Git** :
 
+ ```
 git clone https://github.com/PalexM/litrevu.git
+```
+ ```
 cd litrevu
-
+ ```
 2. **Créer et activer un environnement virtuel** :
 - Sous Windows :
   ```
