@@ -35,7 +35,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: mrp0p/lettings:latest
+        tags: mrp0p/litrevu:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -48,7 +48,7 @@ jobs:
         username: ubuntu
         key: ${{ secrets.MON_SRV }}
         script: |
-          sudo docker pull mrp0p/lettings:latest
-          sudo docker stop lettings || true
-          sudo docker rm lettings || true
-          sudo docker run --name lettings -d -p 8000:8000 mrp0p/lettings:latest
+          sudo docker pull mrp0p/litrevu:latest
+          sudo docker stop litrevu || true
+          sudo docker rm litrevu || true
+          sudo docker run --name litrevu -d -p 8000:8000 mrp0p/lettings:latest
